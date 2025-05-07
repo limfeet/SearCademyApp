@@ -1,0 +1,14 @@
+version: 2
+updates:
+  - package-ecosystem: "pub"
+    directory: "/"  # 루트 디렉토리 기준
+    schedule:
+      interval: "weekly"  # 또는 daily, monthly
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "chore(deps)"
+
+    groups:
+      flutter-deps:
+        patterns:
+          - "*"
