@@ -14,19 +14,15 @@ class AuthRepository {
   }) async {
     try {
       fbAuth.setLanguageCode('ko');
-      print('1signup: {$name}, {$email}, {$password}');
       final userCredential = await fbAuth.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
-      print('2signup: {$name}, {$email}, {$password}');
       final signedInUser = userCredential.user!;
-      print('3signup: {$name}, {$email}, {$password}');
       await usersCollection.doc(signedInUser.uid).set({
         'name': name,
         'email': email,
       });
-      print('4signup: {$name}, {$email}, {$password}');
     } on FirebaseAuthException catch (e) {
       // 에러 처리
       if (e.code == 'weak-password') {
@@ -39,7 +35,6 @@ class AuthRepository {
         print('Error: ${e.message}');
       }
     } catch (e) {
-      print('6signup: {$name}, {$email}, {$password}');
       print('Error: ${e.toString()}');
 
       throw handleException(e);
