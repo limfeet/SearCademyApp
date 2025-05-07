@@ -1,2 +1,0 @@
-D:/workspace/12_LIMFEET/searcademy/App/flutterApp/searcademy/android/app/.cxx/RelWithDebInfo/2s2a1k64/x86/CMakeFiles/edit_cache.dir
-D:/workspace/12_LIMFEET/searcademy/App/flutterApp/searcademy/android/app/.cxx/RelWithDebInfo/2s2a1k64/x86/CMakeFiles/rebuild_cache.dir
