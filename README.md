@@ -1,6 +1,5 @@
-# searcademy
-
-A new Flutter project.
+# SearCademyApp
+Search Academy Flutter App
 
 ## Getting Started
 
@@ -14,3 +13,7 @@ A few resources to get you started if this is your first Flutter project:
 For help getting started with Flutter development, view the
 [online documentation](https://docs.flutter.dev/), which offers tutorials,
 samples, guidance on mobile development, and a full API reference.
+
+## LICENSE
+Additional requirement:
+You **must attribute** the original author ("LIMFEET.COM") in any distribution, whether modified or not.
