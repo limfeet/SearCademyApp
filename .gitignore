@@ -63,6 +63,7 @@ android/app/google-services.json
 ios/Runner/GoogleService-Info.plist
 secrets.properties
 firebase_options.json
+firebase_options.dart
 firebase.json
 
 # env configure file
@@ -79,3 +80,5 @@ firebase.json
 *.box
 *.lock
 
+# PlayStore Keyfile
+*.jks
