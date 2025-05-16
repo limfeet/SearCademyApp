@@ -20,11 +20,11 @@ class ScaffoldWithNavBar extends ConsumerWidget {
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
         items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(icon: Icon(Icons.first_page), label: 'First'),
-          BottomNavigationBarItem(icon: Icon(Icons.pages), label: 'Goods'),
-          BottomNavigationBarItem(icon: Icon(Icons.last_page), label: 'Todos'),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.account_circle), label: 'Weather'),
+          BottomNavigationBarItem(icon: Icon(Icons.search), label: 'Search'),
+          BottomNavigationBarItem(icon: Icon(Icons.settings), label: 'Setting'),
+          //BottomNavigationBarItem(icon: Icon(Icons.last_page), label: 'Todos'),
+          //BottomNavigationBarItem(
+          //    icon: Icon(Icons.account_circle), label: 'Weather'),
         ],
         currentIndex: navigationShell.currentIndex,
         onTap: (int index) => _onTap(context, ref, index),

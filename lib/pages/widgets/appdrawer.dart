@@ -75,9 +75,9 @@ class AppDrawer extends ConsumerWidget {
         ListTile(
           leading: Icon(Icons.home),
           title: Text('홈'),
-          selected: currentPath == '/${RouteNames.home}',
+          selected: currentPath == '/${RouteNames.academyList}',
           onTap: () {
-            GoRouter.of(context).goNamed(RouteNames.home);
+            GoRouter.of(context).goNamed(RouteNames.academyList);
             Navigator.pop(context); // 메뉴 닫기
           },
         ),

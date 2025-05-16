@@ -66,7 +66,9 @@ GoRouter route(Ref ref) {
       final verifyingEmail = state.matchedLocation == '/verifyEmail';
       final splashing = state.matchedLocation == '/splash';
 
-      return (authenticating || verifyingEmail || splashing) ? '/home' : null;
+      return (authenticating || verifyingEmail || splashing)
+          ? '/academyList'
+          : null;
 
       //return null;
     },
@@ -114,13 +116,6 @@ GoRouter route(Ref ref) {
           return const VerifyEmailPage();
         },
       ),
-      GoRoute(
-        path: '/settings',
-        name: RouteNames.settings,
-        builder: (context, state) {
-          return const SettingsPage();
-        },
-      ),
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) {
           return ScaffoldWithNavBar(navigationShell: navigationShell);
@@ -128,24 +123,6 @@ GoRouter route(Ref ref) {
         branches: [
           StatefulShellBranch(
             routes: [
-              GoRoute(
-                path: '/home',
-                name: RouteNames.home,
-                builder: (context, state) {
-                  return const HomePage();
-                },
-                routes: [
-                  GoRoute(
-                    path: 'changePassword',
-                    name: RouteNames.changePassword,
-                    builder: (context, state) {
-                      return const EmptyPage(
-                        message: "CHANGE PW POSITION",
-                      );
-                    },
-                  ),
-                ],
-              ),
               GoRoute(
                 path: '/academyList',
                 name: RouteNames.academyList,
@@ -169,41 +146,10 @@ GoRouter route(Ref ref) {
           StatefulShellBranch(
             routes: [
               GoRoute(
-                path: '/goods',
-                name: RouteNames.goods,
+                path: '/settings',
+                name: RouteNames.settings,
                 builder: (context, state) {
-                  // return const EmptyPage(
-                  //   message: "PRODUCT POSITION",
-                  //);
-                  return const AcademyListPage();
-                },
-              ),
-            ],
-          ),
-          StatefulShellBranch(
-            routes: [
-              GoRoute(
-                path: '/todos',
-                name: RouteNames.todos,
-                builder: (context, state) {
-                  // return const EmptyPage(
-                  //   message: "TODO POSITION",
-                  // );
-                  return const InfiniteScrollPage();
-                },
-              ),
-            ],
-          ),
-          StatefulShellBranch(
-            routes: [
-              GoRoute(
-                path: '/second',
-                name: RouteNames.second,
-                builder: (context, state) {
-                  // return const EmptyPage(
-                  //   message: "WEATHER POSITION",
-                  // );
-                  return const MapWithLocationInput();
+                  return const SettingsPage();
                 },
               ),
             ],

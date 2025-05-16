@@ -32,7 +32,7 @@ class PageNotFound extends StatelessWidget {
               const SizedBox(height: 10),
               OutlinedButton(
                 onPressed: () {
-                  GoRouter.of(context).goNamed(RouteNames.first);
+                  GoRouter.of(context).goNamed(RouteNames.academyList);
                 },
                 child: const Text('Go to First'),
               ),
