@@ -9,6 +9,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:searcademy/firebase_options.dart';
 // main.dart 또는 firebase_service.dart 안에 import
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 // 백그라운드 메시지 핸들러 (최상위 함수여야 함)
 @pragma('vm:entry-point') // ← 이거 추가
@@ -112,10 +113,28 @@ class FirebaseService {
   }
 
   static Future<String?> getFCMToken() async {
-    String? token = await _messaging.getToken();
-    print("FCM Token: $token");
-    return token;
-    // 이 토큰을 서버에 전송하여 특정 기기로 푸시 알림을 보낼 수 있습니다.
+    try {
+      // 시뮬레이터에서는 APNs 토큰 없음 → FCM 토큰도 못 받음
+      if (kIsWeb) {
+        print('웹 환경에서는 FCM 사용 불가');
+        return null;
+      }
+
+      if (Platform.isIOS) {
+        final apnsToken = await _messaging.getAPNSToken();
+        if (apnsToken == null) {
+          print('시뮬레이터 또는 APNs 미설정 상태 - FCM 토큰 요청 생략');
+          return null;
+        }
+      }
+
+      String? token = await _messaging.getToken();
+      print("FCM Token: $token");
+      return token;
+    } catch (e) {
+      print('FCM 토큰 요청 중 오류 발생: $e');
+      return null;
+    }
   }
 
   // 특정 토픽 구독

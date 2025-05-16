@@ -82,3 +82,6 @@ firebase.json
 
 # PlayStore Keyfile
 *.jks
+
+# ios
+Secrets.xcconfig
