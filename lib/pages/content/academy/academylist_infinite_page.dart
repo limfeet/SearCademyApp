@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -86,6 +88,16 @@ class _InfiniteScrollPageState extends ConsumerState<InfiniteScrollPage> {
     if (recentKeywords.length > 5) {
       recentKeywords = recentKeywords.sublist(0, 5); // 최대 5개
     }
+  }
+
+  final Random _random = Random();
+  Color getRandomColor() {
+    return Color.fromARGB(
+      255,
+      _random.nextInt(256),
+      _random.nextInt(256),
+      _random.nextInt(256),
+    );
   }
 
   @override
@@ -222,7 +234,15 @@ class _InfiniteScrollPageState extends ConsumerState<InfiniteScrollPage> {
                       itemBuilder: (context, index) {
                         if (index < visibleItems.length) {
                           final item = visibleItems[index];
+                          final name = item["학원명"] ?? "이름 없음";
+                          final initials =
+                              name.isNotEmpty ? name.substring(0, 1) : "학";
+
                           return ListTile(
+                            leading: CircleAvatar(
+                              backgroundColor: getRandomColor(),
+                              child: Text(initials), // 배경색은 원하는 대로 조절 가능
+                            ),
                             title: Text(item["학원명"] ?? "이름 없음"),
                             subtitle: Text(item["도로명주소"] ?? "주소 없음"),
                             trailing: IconButton(
