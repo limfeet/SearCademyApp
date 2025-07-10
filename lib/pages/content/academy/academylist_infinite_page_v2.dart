@@ -61,10 +61,14 @@ class _InfiniteScrollPageV3State extends ConsumerState<InfiniteScrollPageV3> {
     String keyword = "",
   }) async {
     final baseUrl = dotenv.env['ES_NEARBY_REST_API_URL'];
+    final apiKey = dotenv.env['API_KEY']; // 추가
     if (baseUrl == null) {
       throw Exception('환경 변수 ES_NEARBY_REST_API_URL이 설정되지 않았습니다.');
     }
-
+    if (apiKey == null) {
+      // 추가
+      throw Exception('환경 변수 API_KEY가 설정되지 않았습니다.');
+    }
     final params = {
       'lat': lat.toString(),
       'lon': lon.toString(),
@@ -78,8 +82,14 @@ class _InfiniteScrollPageV3State extends ConsumerState<InfiniteScrollPageV3> {
     }
 
     final uri = Uri.parse(baseUrl).replace(queryParameters: params);
-    final response = await http.get(uri);
-
+    final response = await http.get(
+      uri,
+      headers: {
+        // 추가
+        'x-api-key': apiKey,
+        'Content-Type': 'application/json',
+      },
+    );
     if (response.statusCode == 200) {
       final List<dynamic> data = json.decode(response.body);
       return data.cast<Map<String, dynamic>>();
@@ -265,7 +275,7 @@ class _InfiniteScrollPageV3State extends ConsumerState<InfiniteScrollPageV3> {
                     itemBuilder: (context, index) {
                       if (index < visibleItems.length) {
                         final item = visibleItems[index];
-                        final name = item["학원명"] ?? "이름 없음";
+                        final name = item["ACA_NM"] ?? "이름 없음";
                         final initials =
                             name.isNotEmpty ? name.substring(0, 1) : "학";
 
@@ -274,11 +284,11 @@ class _InfiniteScrollPageV3State extends ConsumerState<InfiniteScrollPageV3> {
                             backgroundColor: getRandomColor(),
                             child: Text(initials),
                           ),
-                          title: Text(item["학원명"] ?? "이름 없음"),
-                          subtitle: Text(item["도로명주소"] ?? "주소 없음"),
+                          title: Text(item["ACA_NM"] ?? "이름 없음"),
+                          subtitle: Text(item["FA_RDNMA"] ?? "주소 없음"),
                           onTap: () {
                             context.push(
-                                '/academyList/academyListDetail/${item["학원지정번호"]}');
+                                '/academyList/academyDetail/${item["ATPT_OFCDC_SC_CODE"]}/${item["ACA_ASNUM"]}');
                           },
                         );
                       } else {

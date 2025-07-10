@@ -10,6 +10,7 @@ class RouteNames {
 
   static const academyList = 'academyList';
   static const academyListDetail = 'academyListDetail';
+  static const academyDetail = 'academyDetail';
 
   static const settings = 'settings';
 

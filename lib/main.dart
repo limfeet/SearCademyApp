@@ -11,13 +11,7 @@ import 'package:searcademy/repositories/hive_todos_repository.dart';
 import 'package:searcademy/repositories/providers/todos_repository_provider.dart';
 import 'package:searcademy/pages/providers/theme/theme_provider.dart';
 import 'package:searcademy/pages/providers/theme/theme_state.dart';
-
-part 'main.g.dart';
-
-@riverpod
-SharedPreferences sharedPreferences(Ref ref) {
-  throw UnimplementedError();
-}
+import 'package:searcademy/repositories/providers/shared_preferences_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

@@ -13,6 +13,10 @@ class GoogleSignInButton extends StatelessWidget {
     return ElevatedButton(
       onPressed: () async {
         try {
+          print("Start GoogleSignIn!!!");
+          if (kDebugMode) {
+            print('Start GoogleSignIn with kDebugMode!!');
+          }    
           // Google 로그인 처리
           final googleSignIn = GoogleSignIn(
             scopes: ['email'],

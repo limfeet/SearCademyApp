@@ -10,7 +10,9 @@ import 'package:searcademy/pages/auth/signin/signin_page.dart';
 import 'package:searcademy/pages/auth/signup/signup_page.dart';
 import 'package:searcademy/pages/auth/verify_email/verify_email_page.dart';
 import 'package:searcademy/pages/content/academy/academylist_detail_page.dart';
+import 'package:searcademy/pages/content/academy/academylist_detail_page_v2.dart';
 import 'package:searcademy/pages/content/academy/academylist_infinite_page.dart';
+import 'package:searcademy/pages/content/academy/academylist_infinite_page_v2.dart';
 import 'package:searcademy/pages/content/academy/academylist_page.dart';
 import 'package:searcademy/pages/content/googlemap/googlemap_page.dart';
 import 'package:searcademy/pages/content/home/home_page.dart';
@@ -127,7 +129,7 @@ GoRouter route(Ref ref) {
                 path: '/academyList',
                 name: RouteNames.academyList,
                 builder: (context, state) {
-                  return const InfiniteScrollPage();
+                  return const InfiniteScrollPageV3();
                 },
                 routes: [
                   GoRoute(
@@ -137,6 +139,18 @@ GoRouter route(Ref ref) {
                       final id = state.pathParameters['id']!;
                       return AcademylistDetailPage(
                           academyId: id); // 해당 학원의 상세 페이지로 이동
+                    },
+                  ),
+                  GoRoute(
+                    path: 'academyDetail/:baseId/:academyId',
+                    name: RouteNames.academyDetail,
+                    builder: (context, state) {
+                      final baseId = state.pathParameters['baseId']!;
+                      final academyId = state.pathParameters['academyId']!;
+                      return AcademyDetailPageV2(
+                        baseId: baseId, 
+                        academyId: academyId
+                      );
                     },
                   ),
                 ],

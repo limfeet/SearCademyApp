@@ -63,3 +63,7 @@ flutter:
     - assets/images/searcademy_icon.png
     - .env
     - assets/data_combined.json
+
+dependency_overrides:
+  analyzer: ^7.3.0
+  analyzer_plugin: ^0.13.4
