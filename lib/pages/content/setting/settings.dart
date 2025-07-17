@@ -1,10 +1,16 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:go_router/go_router.dart';
+import 'package:http/http.dart' as http;
 import 'package:searcademy/pages/content/home/home_provider.dart';
 import 'package:searcademy/pages/providers/theme/theme_provider.dart';
 import 'package:searcademy/pages/widgets/base_scaffold.dart';
 import 'package:searcademy/repositories/providers/package_info_provider.dart';
+import 'package:searcademy/services/api_client_service.dart';
+import 'package:searcademy/utils/error_handler.dart';
 
 import '../../../config/router/route_names.dart';
 import '../../../constants/firebase_constants.dart';
@@ -12,6 +18,23 @@ import '../../../models/custom_error.dart';
 
 class SettingsPage extends ConsumerWidget {
   const SettingsPage({super.key});
+
+  Future<Map<String, dynamic>?> _getApiVersion() async {
+    try {
+      final apiClient = ApiClientService();
+      final healthApiUrl = dotenv.env['HEALTH_API_URL'] ??
+          'http://localhost:18181/system/diagnostics/health'; // HTTPS → HTTP
+
+      final response = await apiClient.get(healthApiUrl);
+
+      if (response.statusCode == 200) {
+        return json.decode(response.body);
+      }
+    } catch (e) {
+      print('API 버전 조회 실패: $e');
+    }
+    return null;
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -22,7 +45,10 @@ class SettingsPage extends ConsumerWidget {
     // ✅ JWT 출력
     Future.microtask(() async {
       final token = await fbAuth.currentUser?.getIdToken(true); // true = 강제 갱신
-      print('🔥 Firebase ID Token: $token');
+      debugPrint('🔥 Firebase ID Token: $token');
+      debugPrint('==================');
+      debugPrint(token);
+      debugPrint('==================');
     });
 
     return BaseScaffold(
@@ -60,6 +86,46 @@ class SettingsPage extends ConsumerWidget {
                   Text(
                     'App Version: ${packageInfoAsync.maybeWhen(data: (info) => info.version, orElse: () => '...')}', // 앱 버전 표시
                     style: const TextStyle(fontSize: 16.0),
+                  ),
+                  const SizedBox(height: 10.0),
+                  // 🔥 API 버전 정보 추가
+                  FutureBuilder<Map<String, dynamic>?>(
+                    future: _getApiVersion(),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const Text(
+                          'API Version: Loading...',
+                          style: TextStyle(fontSize: 16.0),
+                        );
+                      }
+
+                      if (snapshot.hasData && snapshot.data != null) {
+                        final data = snapshot.data!;
+                        return Column(
+                          children: [
+                            Text(
+                              'API Version: ${data['version'] ?? 'Unknown'}',
+                              style: const TextStyle(fontSize: 16.0),
+                            ),
+                            Text(
+                              'Status: ${data['status'] ?? 'Unknown'}',
+                              style: const TextStyle(
+                                fontSize: 14.0,
+                                color: Colors.green,
+                              ),
+                            ),
+                          ],
+                        );
+                      }
+
+                      return const Text(
+                        'API Version: Failed to load',
+                        style: TextStyle(
+                          fontSize: 16.0,
+                          color: Colors.red,
+                        ),
+                      );
+                    },
                   ),
                   const SizedBox(height: 40),
                   OutlinedButton(
