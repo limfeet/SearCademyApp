@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:searcademy/pages/widgets/appdrawer.dart';
 import 'package:searcademy/pages/widgets/map_dialog.dart';
@@ -11,6 +10,8 @@ import 'package:searcademy/pages/widgets/recent_search_keywords.dart';
 import 'package:searcademy/repositories/location/location_provider.dart';
 import 'package:searcademy/controller/drawer_controller.dart';
 import 'package:searcademy/repositories/providers/scaffoldstate_provider.dart';
+import 'package:searcademy/services/api_client_service.dart'; // 추가
+import 'package:searcademy/utils/error_handler.dart'; // 추가
 
 class InfiniteScrollPageV3 extends ConsumerStatefulWidget {
   const InfiniteScrollPageV3({super.key});
@@ -24,6 +25,7 @@ class _InfiniteScrollPageV3State extends ConsumerState<InfiniteScrollPageV3> {
   final ScrollController _scrollController = ScrollController();
   final TextEditingController _searchController = TextEditingController();
   final FocusNode _searchFocusNode = FocusNode();
+  final ApiClientService _apiClient = ApiClientService(); // 추가
 
   List<Map<String, dynamic>> visibleItems = [];
   List<String> recentKeywords = [];
@@ -60,41 +62,64 @@ class _InfiniteScrollPageV3State extends ConsumerState<InfiniteScrollPageV3> {
     int pageSize = 50,
     String keyword = "",
   }) async {
-    final baseUrl = dotenv.env['ES_NEARBY_REST_API_URL'];
-    final apiKey = dotenv.env['API_KEY']; // 추가
-    if (baseUrl == null) {
-      throw Exception('환경 변수 ES_NEARBY_REST_API_URL이 설정되지 않았습니다.');
-    }
-    if (apiKey == null) {
-      // 추가
-      throw Exception('환경 변수 API_KEY가 설정되지 않았습니다.');
-    }
-    final params = {
-      'lat': lat.toString(),
-      'lon': lon.toString(),
-      'radius_km': radiusKm.toString(),
-      'page': page.toString(),
-      'page_size': pageSize.toString(),
-    };
+    String baseUrl;
+    Map<String, String> params;
+    bool isElasticsearch = false;
 
     if (keyword.isNotEmpty) {
-      params['keyword'] = keyword;
+      // Elasticsearch 검색 사용
+      baseUrl = dotenv.env['ES_SEARCH_API_URL'] ??
+          'http://localhost:18181/search/advanced';
+      params = {
+        'keyword': keyword,
+        'lat': lat.toString(),
+        'lon': lon.toString(),
+        'radius_km': radiusKm.toString(),
+        'limit': pageSize.toString(),
+      };
+      isElasticsearch = true;
+    } else {
+      // MongoDB 근처 학원 조회 사용
+      baseUrl = dotenv.env['MONGODB_NEARBY_API_URL'] ??
+          'http://localhost:18181/academies/nearbypaging';
+      params = {
+        'lat': lat.toString(),
+        'lon': lon.toString(),
+        'radius_km': radiusKm.toString(),
+        'page': page.toString(),
+        'page_size': pageSize.toString(),
+      };
     }
 
-    final uri = Uri.parse(baseUrl).replace(queryParameters: params);
-    final response = await http.get(
-      uri,
-      headers: {
-        // 추가
-        'x-api-key': apiKey,
-        'Content-Type': 'application/json',
-      },
-    );
-    if (response.statusCode == 200) {
-      final List<dynamic> data = json.decode(response.body);
-      return data.cast<Map<String, dynamic>>();
+    // 모듈화된 API 클라이언트 사용
+    final response = await _apiClient.get(baseUrl, queryParameters: params);
+    final jsonData = json.decode(response.body);
+
+    if (isElasticsearch) {
+      // Elasticsearch 응답 처리
+      if (jsonData['success'] == true && jsonData['data'] != null) {
+        final List<dynamic> esData = jsonData['data'];
+
+        // ES 데이터를 MongoDB 형식으로 변환
+        return esData.map<Map<String, dynamic>>((item) {
+          return {
+            'ACA_ASNUM': item['aca_asnum'],
+            'ATPT_OFCDC_SC_CODE': item['atpt_ofcdc_sc_code'],
+            'ACA_NM': item['aca_name'],
+            'FA_RDNMA': item['address'],
+            'location': {
+              'type': 'Point',
+              'coordinates': [item['location']['lon'], item['location']['lat']]
+            }
+          };
+        }).toList();
+      } else {
+        return [];
+      }
     } else {
-      throw Exception('근처 학원 불러오기 실패');
+      // MongoDB 응답 처리 (기존 방식)
+      final List<dynamic> data = jsonData;
+      return data.cast<Map<String, dynamic>>();
     }
   }
 
@@ -124,6 +149,11 @@ class _InfiniteScrollPageV3State extends ConsumerState<InfiniteScrollPageV3> {
     } catch (e) {
       print("에러: $e");
       setState(() => isLoading = false);
+
+      // 모듈화된 에러 처리 사용
+      if (mounted) {
+        ErrorHandler.handleApiError(context, e);
+      }
     }
   }
 

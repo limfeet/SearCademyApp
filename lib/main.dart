@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:searcademy/config/router/router_provider.dart';
 import 'package:searcademy/services/firebase_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';

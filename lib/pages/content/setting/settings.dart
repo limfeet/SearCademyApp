@@ -19,6 +19,12 @@ class SettingsPage extends ConsumerWidget {
     final profileState = ref.watch(profileProvider(uid));
     final packageInfoAsync = ref.watch(packageInfoProvider);
 
+    // ✅ JWT 출력
+    Future.microtask(() async {
+      final token = await fbAuth.currentUser?.getIdToken(true); // true = 강제 갱신
+      print('🔥 Firebase ID Token: $token');
+    });
+
     return BaseScaffold(
       child: Scaffold(
         appBar: AppBar(
