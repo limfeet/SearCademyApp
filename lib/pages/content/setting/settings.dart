@@ -1,20 +1,18 @@
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:go_router/go_router.dart';
-import 'package:http/http.dart' as http;
+import 'package:searcademy/config/router/route_names.dart';
+import 'package:searcademy/constants/firebase_constants.dart';
+import 'package:searcademy/models/custom_error.dart';
 import 'package:searcademy/pages/content/home/home_provider.dart';
 import 'package:searcademy/pages/providers/theme/theme_provider.dart';
 import 'package:searcademy/pages/widgets/base_scaffold.dart';
 import 'package:searcademy/repositories/providers/package_info_provider.dart';
 import 'package:searcademy/services/api_client_service.dart';
-import 'package:searcademy/utils/error_handler.dart';
-
-import '../../../config/router/route_names.dart';
-import '../../../constants/firebase_constants.dart';
-import '../../../models/custom_error.dart';
 
 class SettingsPage extends ConsumerWidget {
   const SettingsPage({super.key});
@@ -42,14 +40,17 @@ class SettingsPage extends ConsumerWidget {
     final profileState = ref.watch(profileProvider(uid));
     final packageInfoAsync = ref.watch(packageInfoProvider);
 
-    // ✅ JWT 출력
-    Future.microtask(() async {
-      final token = await fbAuth.currentUser?.getIdToken(true); // true = 강제 갱신
-      debugPrint('🔥 Firebase ID Token: $token');
-      debugPrint('==================');
-      debugPrint(token);
-      debugPrint('==================');
-    });
+    if (kDebugMode) {
+      // ✅ JWT 출력
+      Future.microtask(() async {
+        final token =
+            await fbAuth.currentUser?.getIdToken(true); // true = 강제 갱신
+        debugPrint('🔥 Firebase ID Token: $token');
+        debugPrint('==================');
+        debugPrint(token);
+        debugPrint('==================');
+      });
+    }
 
     return BaseScaffold(
       child: Scaffold(
@@ -128,6 +129,21 @@ class SettingsPage extends ConsumerWidget {
                     },
                   ),
                   const SizedBox(height: 40),
+
+                  // 🆕 개발자 페이지 버튼 추가
+                  ElevatedButton.icon(
+                    onPressed: () {
+                      GoRouter.of(context).go('/settings/developer');
+                    },
+                    icon: const Icon(Icons.developer_mode),
+                    label: const Text(
+                      '개발자 페이지',
+                      style: TextStyle(fontSize: 18),
+                    ),
+                  ),
+
+                  const SizedBox(height: 20), // 기존 버튼과 간격 조정
+
                   OutlinedButton(
                     onPressed: () {
                       GoRouter.of(context).goNamed(RouteNames.changePassword);

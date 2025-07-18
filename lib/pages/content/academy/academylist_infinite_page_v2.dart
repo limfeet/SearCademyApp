@@ -42,6 +42,7 @@ class _InfiniteScrollPageV3State extends ConsumerState<InfiniteScrollPageV3> {
   List<String> recentKeywords = [];
 
   bool isLoading = false;
+  bool isInitialLoading = true; // 초기 로딩 상태 추가
   bool hasMore = true;
   int page = 1;
   final int pageSize = 50;
@@ -53,7 +54,6 @@ class _InfiniteScrollPageV3State extends ConsumerState<InfiniteScrollPageV3> {
 
   // 광고 관련 변수들 (최소화)
   BannerAd? _bannerAd;
-  bool _isBannerAdReady = false;
 
   @override
   void initState() {
@@ -66,22 +66,24 @@ class _InfiniteScrollPageV3State extends ConsumerState<InfiniteScrollPageV3> {
   /// 광고 로드 (간소화됨)
   void _loadBannerAd() {
     _bannerAd = AdManager.instance.createBannerAd(
-      onAdLoaded: (_) => setState(() => _isBannerAdReady = true),
+      onAdLoaded: (_) => setState(() {}), // 단순히 setState만 호출
       onAdFailedToLoad: (ad, err) {
         print('배너 광고 로드 실패: ${err.message}');
-        setState(() => _isBannerAdReady = false);
         ad.dispose();
       },
     );
     _bannerAd?.load();
   }
 
-  // ... 기존의 모든 비즈니스 로직들 (그대로 유지)
   Future<void> initLoad() async {
+    setState(() => isInitialLoading = true); // 초기 로딩 시작
+
     final (loadedLat, loadedLon) = await ref.read(locationProvider.future);
     lat = loadedLat;
     lon = loadedLon;
     await _loadMoreItems();
+
+    setState(() => isInitialLoading = false); // 초기 로딩 완료
   }
 
   Future<List<Map<String, dynamic>>> loadAcademyDataV2({
@@ -186,15 +188,21 @@ class _InfiniteScrollPageV3State extends ConsumerState<InfiniteScrollPageV3> {
     }
   }
 
-  void _startSearch(String query) {
+  void _startSearch(String query) async {
     setState(() {
       searchQuery = query.trim();
       _addToRecent(searchQuery);
       page = 1;
       visibleItems.clear();
       hasMore = true;
+      isInitialLoading = true; // 검색 시작 시 로딩 표시
     });
-    _loadMoreItems();
+
+    await _loadMoreItems();
+
+    setState(() {
+      isInitialLoading = false; // 검색 완료 시 로딩 해제
+    });
   }
 
   void _addToRecent(String keyword) {
@@ -206,15 +214,21 @@ class _InfiniteScrollPageV3State extends ConsumerState<InfiniteScrollPageV3> {
     }
   }
 
-  void _changeLocation(double newLat, double newLon) {
+  void _changeLocation(double newLat, double newLon) async {
     setState(() {
       lat = newLat;
       lon = newLon;
       page = 1;
       visibleItems.clear();
       hasMore = true;
+      isInitialLoading = true; // 위치 변경 시 로딩 표시
     });
-    _loadMoreItems();
+
+    await _loadMoreItems();
+
+    setState(() {
+      isInitialLoading = false; // 위치 변경 완료 시 로딩 해제
+    });
   }
 
   final Random _random = Random();
@@ -320,59 +334,70 @@ class _InfiniteScrollPageV3State extends ConsumerState<InfiniteScrollPageV3> {
               ],
             ),
           ),
-          // 리스트 (광고 포함)
+          // 리스트 (광고 포함) - 로딩 상태 추가
           Expanded(
-            child: visibleItems.isEmpty && !isLoading
-                ? const Center(child: Text("검색 결과 없음"))
-                : ListView.builder(
-                    controller: _scrollController,
-                    itemCount: totalItems,
-                    itemBuilder: (context, index) {
-                      // 광고 위치 확인 (ads 폴더의 헬퍼 사용)
-                      if (AdListHelper.isAdPosition(index)) {
-                        return BannerAdWidget(
-                          adUnitId: Platform.isAndroid
-                              ? 'ca-app-pub-3940256099942544/6300978111' // Android 테스트
-                              : 'ca-app-pub-3940256099942544/2934735716', // iOS 테스트
-                        );
-                      }
+            child: isInitialLoading
+                ? const Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        CircularProgressIndicator(),
+                        SizedBox(height: 16),
+                        Text("데이터를 불러오는 중..."),
+                      ],
+                    ),
+                  )
+                : visibleItems.isEmpty
+                    ? const Center(child: Text("검색 결과 없음"))
+                    : ListView.builder(
+                        controller: _scrollController,
+                        itemCount: totalItems,
+                        itemBuilder: (context, index) {
+                          // 광고 위치 확인 (ads 폴더의 헬퍼 사용)
+                          if (AdListHelper.isAdPosition(index)) {
+                            return BannerAdWidget(
+                              adUnitId: Platform.isAndroid
+                                  ? 'ca-app-pub-3940256099942544/6300978111' // Android 테스트
+                                  : 'ca-app-pub-3940256099942544/2934735716', // iOS 테스트
+                            );
+                          }
 
-                      // 로딩 인디케이터 확인
-                      if (AdListHelper.isLoadingPosition(
-                          index, totalItems, isLoading)) {
-                        return const Padding(
-                          padding: EdgeInsets.all(16.0),
-                          child: Center(child: CircularProgressIndicator()),
-                        );
-                      }
+                          // 로딩 인디케이터 확인
+                          if (AdListHelper.isLoadingPosition(
+                              index, totalItems, isLoading)) {
+                            return const Padding(
+                              padding: EdgeInsets.all(16.0),
+                              child: Center(child: CircularProgressIndicator()),
+                            );
+                          }
 
-                      // 실제 데이터 처리
-                      final dataIndex = AdListHelper.getDataIndex(index);
+                          // 실제 데이터 처리
+                          final dataIndex = AdListHelper.getDataIndex(index);
 
-                      if (AdListHelper.isValidDataIndex(
-                          dataIndex, visibleItems.length)) {
-                        final item = visibleItems[dataIndex];
-                        final name = item["ACA_NM"] ?? "이름 없음";
-                        final initials =
-                            name.isNotEmpty ? name.substring(0, 1) : "학";
+                          if (AdListHelper.isValidDataIndex(
+                              dataIndex, visibleItems.length)) {
+                            final item = visibleItems[dataIndex];
+                            final name = item["ACA_NM"] ?? "이름 없음";
+                            final initials =
+                                name.isNotEmpty ? name.substring(0, 1) : "학";
 
-                        return ListTile(
-                          leading: CircleAvatar(
-                            backgroundColor: getRandomColor(),
-                            child: Text(initials),
-                          ),
-                          title: Text(item["ACA_NM"] ?? "이름 없음"),
-                          subtitle: Text(item["FA_RDNMA"] ?? "주소 없음"),
-                          onTap: () {
-                            context.push(
-                                '/academyList/academyDetail/${item["ATPT_OFCDC_SC_CODE"]}/${item["ACA_ASNUM"]}');
-                          },
-                        );
-                      }
+                            return ListTile(
+                              leading: CircleAvatar(
+                                backgroundColor: getRandomColor(),
+                                child: Text(initials),
+                              ),
+                              title: Text(item["ACA_NM"] ?? "이름 없음"),
+                              subtitle: Text(item["FA_RDNMA"] ?? "주소 없음"),
+                              onTap: () {
+                                context.push(
+                                    '/academyList/academyDetail/${item["ATPT_OFCDC_SC_CODE"]}/${item["ACA_ASNUM"]}');
+                              },
+                            );
+                          }
 
-                      return const SizedBox.shrink();
-                    },
-                  ),
+                          return const SizedBox.shrink();
+                        },
+                      ),
           ),
         ],
       ),

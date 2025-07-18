@@ -16,6 +16,7 @@ import 'package:searcademy/pages/content/academy/academylist_infinite_page_v2.da
 import 'package:searcademy/pages/content/academy/academylist_page.dart';
 import 'package:searcademy/pages/content/googlemap/googlemap_page.dart';
 import 'package:searcademy/pages/content/home/home_page.dart';
+import 'package:searcademy/pages/content/setting/developer_page.dart';
 import 'package:searcademy/pages/content/setting/settings.dart';
 import 'package:searcademy/pages/empty_page.dart';
 import 'package:searcademy/pages/splash/firebase_error_page.dart';
@@ -148,9 +149,7 @@ GoRouter route(Ref ref) {
                       final baseId = state.pathParameters['baseId']!;
                       final academyId = state.pathParameters['academyId']!;
                       return AcademyDetailPageV2(
-                        baseId: baseId, 
-                        academyId: academyId
-                      );
+                          baseId: baseId, academyId: academyId);
                     },
                   ),
                 ],
@@ -162,9 +161,14 @@ GoRouter route(Ref ref) {
               GoRoute(
                 path: '/settings',
                 name: RouteNames.settings,
-                builder: (context, state) {
-                  return const SettingsPage();
-                },
+                builder: (context, state) => const SettingsPage(),
+                routes: [
+                  GoRoute(
+                    path: 'developer',
+                    name: RouteNames.developerPage,
+                    builder: (context, state) => const DeveloperPage(),
+                  ),
+                ],
               ),
             ],
           ),

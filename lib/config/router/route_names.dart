@@ -21,4 +21,5 @@ class RouteNames {
   static const secondDetails = 'secondDetails';
   static const todos = 'todos';
   static const thirdDetails = 'thirdDetails';
+  static const developerPage = 'developerPage';
 }
