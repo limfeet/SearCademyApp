@@ -91,16 +91,16 @@ class AppDrawer extends ConsumerWidget {
             Navigator.pop(context);
           },
         ),
-        ListTile(
-          leading: Icon(Icons.settings),
-          title: Text('설정'),
-          //selected: currentPath == '/settings',
-          selected: currentPath == '/${RouteNames.settings}',
-          onTap: () {
-            context.pushNamed(RouteNames.settings);
-            Navigator.pop(context);
-          },
-        ),
+        // ListTile(
+        //   leading: Icon(Icons.settings),
+        //   title: Text('설정'),
+        //   //selected: currentPath == '/settings',
+        //   selected: currentPath == '/${RouteNames.settings}',
+        //   onTap: () {
+        //     context.pushNamed(RouteNames.settings);
+        //     Navigator.pop(context);
+        //   },
+        // ),
         Divider(),
         ListTile(
           leading: Icon(Icons.info),

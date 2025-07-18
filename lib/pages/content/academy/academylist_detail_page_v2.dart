@@ -2,8 +2,9 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:searcademy/services/api_client_service.dart'; // 추가
-import 'package:searcademy/utils/error_handler.dart'; // 추가
+import 'package:searcademy/services/api_client_service.dart';
+import 'package:searcademy/utils/error_handler.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AcademyDetailPageV2 extends StatefulWidget {
   final String baseId;
@@ -17,17 +18,31 @@ class AcademyDetailPageV2 extends StatefulWidget {
 }
 
 class _AcademyDetailPageV2State extends State<AcademyDetailPageV2> {
-  final ApiClientService _apiClient = ApiClientService(); // 추가
+  final ApiClientService _apiClient = ApiClientService();
 
   Map<String, dynamic>? academyData;
   bool isLoading = true;
   String? errorMessage;
-  bool showMap = false; // 지도 표시 상태 추가
+  bool showMap = false;
 
   @override
   void initState() {
     super.initState();
     _loadAcademyDetail();
+  }
+
+  Future<String> _getActiveApiBaseUrl() async {
+    final prefs = await SharedPreferences.getInstance();
+    final isEnabled = prefs.getBool('custom_api_enabled') ?? false;
+
+    if (isEnabled) {
+      final customUrl = prefs.getString('custom_api_url') ?? '';
+      if (customUrl.isNotEmpty) {
+        return customUrl;
+      }
+    }
+
+    return dotenv.env['API_BASE_URL'] ?? dotenv.env['ES_DETAIL_API_URL'] ?? '';
   }
 
   Future<void> _loadAcademyDetail() async {
@@ -37,12 +52,21 @@ class _AcademyDetailPageV2State extends State<AcademyDetailPageV2> {
         errorMessage = null;
       });
 
-      final baseUrl =
-          dotenv.env['ES_DETAIL_API_URL'] ?? 'http://localhost:18181/academies';
+      final baseUrl = await _getActiveApiBaseUrl();
+      if (baseUrl.isEmpty) {
+        throw Exception('API 서버 URL이 설정되지 않았습니다.');
+      }
 
-      final url = '$baseUrl/${widget.baseId}/${widget.academyId}';
+      // 기존 방식과 새로운 방식 모두 지원
+      String url;
+      if (baseUrl.contains('/academies')) {
+        // 기존 전체 URL 방식
+        url = '$baseUrl/${widget.baseId}/${widget.academyId}';
+      } else {
+        // 새로운 베이스 URL 방식
+        url = '$baseUrl/academies/${widget.baseId}/${widget.academyId}';
+      }
 
-      // 모듈화된 API 클라이언트 사용
       final response = await _apiClient.get(url);
 
       if (response.statusCode == 200) {
@@ -60,7 +84,6 @@ class _AcademyDetailPageV2State extends State<AcademyDetailPageV2> {
         isLoading = false;
       });
 
-      // 모듈화된 에러 처리 사용
       if (mounted) {
         ErrorHandler.handleApiError(context, e);
       }

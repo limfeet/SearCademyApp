@@ -23,6 +23,7 @@ import 'package:searcademy/utils/error_handler.dart';
 import 'package:searcademy/ads/ad_manager.dart';
 import 'package:searcademy/ads/utils/ad_list_helper.dart';
 import 'package:searcademy/ads/widgets/banner_ad_widget.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class InfiniteScrollPageV3 extends ConsumerStatefulWidget {
   const InfiniteScrollPageV3({super.key});
@@ -86,6 +87,21 @@ class _InfiniteScrollPageV3State extends ConsumerState<InfiniteScrollPageV3> {
     setState(() => isInitialLoading = false); // 초기 로딩 완료
   }
 
+// 커스텀 API URL을 가져오는 헬퍼 함수 추가
+  Future<String> _getActiveApiBaseUrl() async {
+    final prefs = await SharedPreferences.getInstance();
+    final isEnabled = prefs.getBool('custom_api_enabled') ?? false;
+
+    if (isEnabled) {
+      final customUrl = prefs.getString('custom_api_url') ?? '';
+      if (customUrl.isNotEmpty) {
+        return customUrl;
+      }
+    }
+
+    return dotenv.env['API_BASE_URL'] ?? '';
+  }
+
   Future<List<Map<String, dynamic>>> loadAcademyDataV2({
     required double lat,
     required double lon,
@@ -94,14 +110,17 @@ class _InfiniteScrollPageV3State extends ConsumerState<InfiniteScrollPageV3> {
     int pageSize = 50,
     String keyword = "",
   }) async {
-    // 기존 코드 그대로...
-    String baseUrl;
+    final baseUrl = await _getActiveApiBaseUrl();
+    if (baseUrl.isEmpty) {
+      throw Exception('API 서버 URL이 설정되지 않았습니다.');
+    }
+
     Map<String, String> params;
     bool isElasticsearch = false;
+    String endpoint;
 
     if (keyword.isNotEmpty) {
-      baseUrl = dotenv.env['ES_SEARCH_API_URL'] ??
-          'http://localhost:18181/search/advanced';
+      endpoint = '$baseUrl/search/advanced';
       params = {
         'keyword': keyword,
         'lat': lat.toString(),
@@ -111,8 +130,7 @@ class _InfiniteScrollPageV3State extends ConsumerState<InfiniteScrollPageV3> {
       };
       isElasticsearch = true;
     } else {
-      baseUrl = dotenv.env['MONGODB_NEARBY_API_URL'] ??
-          'http://localhost:18181/academies/nearbypaging';
+      endpoint = '$baseUrl/academies/nearbypaging';
       params = {
         'lat': lat.toString(),
         'lon': lon.toString(),
@@ -122,7 +140,7 @@ class _InfiniteScrollPageV3State extends ConsumerState<InfiniteScrollPageV3> {
       };
     }
 
-    final response = await _apiClient.get(baseUrl, queryParameters: params);
+    final response = await _apiClient.get(endpoint, queryParameters: params);
     final jsonData = json.decode(response.body);
 
     if (isElasticsearch) {

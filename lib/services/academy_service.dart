@@ -1,10 +1,11 @@
+//academy_service.dart
 import 'dart:convert';
 import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
-import 'package:shared_preferences/shared_preferences.dart'; // 추가
+import 'package:shared_preferences/shared_preferences.dart';
 
-// 커스텀 API URL을 가져오는 헬퍼 함수 (추가)
+// 커스텀 API URL을 가져오는 헬퍼 함수
 Future<String> _getActiveApiBaseUrl() async {
   final prefs = await SharedPreferences.getInstance();
   final isEnabled = prefs.getBool('custom_api_enabled') ?? false;
@@ -16,9 +17,8 @@ Future<String> _getActiveApiBaseUrl() async {
     }
   }
 
-  // 기본값 반환
-  return dotenv.env['ES_NEARBY_REST_API_URL'] ??
-      'https://academy-api-service-tokyo-998204324830.asia-northeast1.run.app';
+  // API_BASE_URL 사용
+  return dotenv.env['API_BASE_URL'] ?? '';
 }
 
 Future<List<Map<String, dynamic>>> loadAcademyData() async {
@@ -51,8 +51,11 @@ Future<List<Map<String, dynamic>>> loadAcademyDataV2({
   int page = 1,
   int pageSize = 50,
 }) async {
-  // 변경: 커스텀 API URL 사용
   final baseUrl = await _getActiveApiBaseUrl();
+  if (baseUrl.isEmpty) {
+    throw Exception('API 서버 URL이 설정되지 않았습니다.');
+  }
+
   final apiKey = dotenv.env['API_KEY'];
 
   final uri =
