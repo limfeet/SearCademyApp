@@ -9,9 +9,24 @@ import 'package:searcademy/repositories/auth_repository_provider.dart';
 import 'package:searcademy/repositories/providers/package_info_provider.dart';
 import 'package:searcademy/utils/error_dialog.dart';
 
+// 페이지 타입을 구분하기 위한 enum
+enum DrawerPageType {
+  search,
+  settings,
+  // 추후 확장 가능한 다른 페이지들
+  // todos,
+  // weather,
+}
+
 // 공통 Drawer 위젯
 class AppDrawer extends ConsumerWidget {
-  const AppDrawer({super.key});
+  const AppDrawer({
+    super.key,
+    this.currentPageType,
+    this.scaffoldKey,
+  });
+  final DrawerPageType? currentPageType;
+  final GlobalKey<ScaffoldState>? scaffoldKey;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -77,8 +92,10 @@ class AppDrawer extends ConsumerWidget {
           title: Text('홈'),
           selected: currentPath == '/${RouteNames.academyList}',
           onTap: () {
-            GoRouter.of(context).goNamed(RouteNames.academyList);
-            Navigator.pop(context); // 메뉴 닫기
+            _navigateAndCloseDrawer(
+              context,
+              () => GoRouter.of(context).goNamed(RouteNames.academyList),
+            );
           },
         ),
         ListTile(
@@ -87,8 +104,10 @@ class AppDrawer extends ConsumerWidget {
           //selected: currentPath == '/changePassword',
           selected: currentPath == '/${RouteNames.changePassword}',
           onTap: () {
-            GoRouter.of(context).goNamed(RouteNames.changePassword);
-            Navigator.pop(context);
+            _navigateAndCloseDrawer(
+              context,
+              () => GoRouter.of(context).goNamed(RouteNames.changePassword),
+            );
           },
         ),
         // ListTile(
@@ -113,6 +132,8 @@ class AppDrawer extends ConsumerWidget {
           title: Text('logout'),
           onTap: () async {
             // 로그아웃 처리
+            // 🔧 로그아웃 시에도 드로어를 먼저 닫기
+            _closeDrawer(context);
             try {
               await ref.read(authRepositoryProvider).signout();
             } on CustomError catch (e) {
@@ -123,5 +144,31 @@ class AppDrawer extends ConsumerWidget {
         ),
       ],
     ));
+  }
+
+  // 🔧 드로어를 닫고 네비게이션하는 헬퍼 메서드
+  void _navigateAndCloseDrawer(
+      BuildContext context, VoidCallback navigationCallback) {
+    _closeDrawer(context);
+
+    // 드로어가 닫힌 후 네비게이션 실행
+    Future.delayed(const Duration(milliseconds: 250), () {
+      navigationCallback();
+    });
+  }
+
+  // 🔧 현재 페이지의 드로어를 닫는 헬퍼 메서드
+  void _closeDrawer(BuildContext context) {
+    // scaffoldKey가 제공된 경우 해당 키 사용
+    if (scaffoldKey != null &&
+        scaffoldKey!.currentState?.isDrawerOpen == true) {
+      scaffoldKey!.currentState?.closeDrawer();
+      return;
+    }
+
+    // 기본적으로 Navigator.pop 사용
+    if (Navigator.of(context).canPop()) {
+      Navigator.pop(context);
+    }
   }
 }

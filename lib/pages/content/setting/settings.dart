@@ -64,7 +64,7 @@ class SettingsPage extends ConsumerWidget {
     final profileState = ref.watch(profileProvider(uid));
     final packageInfoAsync = ref.watch(packageInfoProvider);
     final drawerController = ref.read(drawerControllerProvider.notifier);
-    final scaffoldKey = ref.watch(scaffoldKeyProvider);
+    final scaffoldKey = ref.watch(settingsScaffoldKeyProvider);
 
     if (kDebugMode) {
       // ✅ JWT 출력
@@ -80,12 +80,23 @@ class SettingsPage extends ConsumerWidget {
 
     return Scaffold(
       key: scaffoldKey,
-      drawer: const AppDrawer(),
+      drawer: AppDrawer(
+        // 🔧 Settings 페이지임을 명시적으로 전달
+        currentPageType: DrawerPageType.settings,
+        scaffoldKey: scaffoldKey,
+      ),
       appBar: AppBar(
         title: const Text('Settings'),
         leading: IconButton(
           icon: const Icon(Icons.menu),
-          onPressed: () => drawerController.openDrawer(),
+          onPressed: () {
+            // 🔧 독립적인 드로어 컨트롤 사용
+            if (scaffoldKey.currentState?.isDrawerOpen ?? false) {
+              scaffoldKey.currentState?.closeDrawer();
+            } else {
+              scaffoldKey.currentState?.openDrawer();
+            }
+          },
         ),
       ),
       body: profileState.when(

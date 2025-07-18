@@ -271,18 +271,30 @@ class _InfiniteScrollPageV3State extends ConsumerState<InfiniteScrollPageV3> {
   @override
   Widget build(BuildContext context) {
     final drawerController = ref.read(drawerControllerProvider.notifier);
-    final scaffoldKey = ref.watch(scaffoldKeyProvider);
+// 🔧 Search 탭 전용 스캐폴드 키 사용
+    final scaffoldKey = ref.watch(searchScaffoldKeyProvider);
     final totalItems =
         AdListHelper.getTotalItemCount(visibleItems.length, isLoading);
 
     return Scaffold(
       key: scaffoldKey,
-      drawer: const AppDrawer(),
+      drawer: AppDrawer(
+        // 🔧 Search 페이지임을 명시적으로 전달
+        currentPageType: DrawerPageType.search,
+        scaffoldKey: scaffoldKey,
+      ),
       appBar: AppBar(
         title: const Text("학원찾기앱"),
         leading: IconButton(
           icon: const Icon(Icons.menu),
-          onPressed: () => drawerController.openDrawer(),
+          onPressed: () {
+            // 🔧 독립적인 드로어 컨트롤 사용
+            if (scaffoldKey.currentState?.isDrawerOpen ?? false) {
+              scaffoldKey.currentState?.closeDrawer();
+            } else {
+              scaffoldKey.currentState?.openDrawer();
+            }
+          },
         ),
         actions: [
           IconButton(
