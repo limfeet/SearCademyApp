@@ -57,7 +57,8 @@ class _DeveloperPageState extends ConsumerState<DeveloperPage> {
       }
     }
 
-    return dotenv.env['ES_SEARCH_API_URL'] ?? 'http://100.69.91.222:18181';
+    // .env에서 베이스 URL 가져오기
+    return dotenv.env['API_BASE_URL'] ?? '설정되지 않음';
   }
 
   void _showApiUrlDialog() {
@@ -80,7 +81,7 @@ class _DeveloperPageState extends ConsumerState<DeveloperPage> {
             ),
             const SizedBox(height: 8),
             const Text(
-              '예시:\n• 개발: http://100.69.91.222:18181\n• 운영: https://academy-api-service-tokyo-998204324830.asia-northeast1.run.app',
+              '예시:\n• 개발: http://x.x.x.x:your-port\n• 운영: https://your-doamin',
               style: TextStyle(fontSize: 12, color: Colors.grey),
             ),
           ],
