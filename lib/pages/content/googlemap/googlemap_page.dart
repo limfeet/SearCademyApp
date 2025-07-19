@@ -27,7 +27,7 @@ class _MapWithLocationInputState extends State<MapWithLocationInput> {
     // 위치 서비스 켜져있는지 확인
     serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
-      print('❌ 위치 서비스 꺼져있음');
+      debugPrint('❌ 위치 서비스 꺼져있음');
       return;
     }
 
@@ -36,13 +36,13 @@ class _MapWithLocationInputState extends State<MapWithLocationInput> {
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
       if (permission == LocationPermission.denied) {
-        print('❌ 위치 권한 거부됨');
+        debugPrint('❌ 위치 권한 거부됨');
         return;
       }
     }
 
     if (permission == LocationPermission.deniedForever) {
-      print('❌ 위치 권한 영구 거부됨');
+      debugPrint('❌ 위치 권한 영구 거부됨');
       return;
     }
 

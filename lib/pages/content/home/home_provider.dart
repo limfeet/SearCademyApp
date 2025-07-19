@@ -1,7 +1,6 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-
-import '../../../repositories/profile_repository_provider.dart';
-import '../../../models/app_user.dart';
+import 'package:searcademy/models/app_user.dart';
+import 'package:searcademy/repositories/profile_repository_provider.dart';
 
 part 'home_provider.g.dart';
 

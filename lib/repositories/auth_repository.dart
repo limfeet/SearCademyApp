@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
+import 'package:searcademy/constants/firebase_constants.dart';
 
-import '../constants/firebase_constants.dart';
 import 'handle_exception.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
@@ -26,16 +27,16 @@ class AuthRepository {
     } on FirebaseAuthException catch (e) {
       // 에러 처리
       if (e.code == 'weak-password') {
-        print('The password is too weak.');
+        debugPrint('The password is too weak.');
       } else if (e.code == 'email-already-in-use') {
-        print('The account already exists for that email.');
+        debugPrint('The account already exists for that email.');
       } else if (e.code == 'invalid-email') {
-        print('The email address is not valid.');
+        debugPrint('The email address is not valid.');
       } else {
-        print('Error: ${e.message}');
+        debugPrint('Error: ${e.message}');
       }
     } catch (e) {
-      print('Error: ${e.toString()}');
+      debugPrint('Error: ${e.toString()}');
 
       throw handleException(e);
     }
@@ -77,7 +78,7 @@ class AuthRepository {
           if (googleSignIn.currentUser != null) {
             await googleSignIn.disconnect();
           } else {
-            print('⚠️ disconnect skipped: no currentUser');
+            debugPrint('⚠️ disconnect skipped: no currentUser');
           }
         }
       }

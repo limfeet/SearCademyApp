@@ -3,12 +3,11 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-
-import '../../../config/router/route_names.dart';
-import '../../../constants/firebase_constants.dart';
-import '../../../models/custom_error.dart';
-import '../../../repositories/auth_repository_provider.dart';
-import '../../../utils/error_dialog.dart';
+import 'package:searcademy/config/router/route_names.dart';
+import 'package:searcademy/constants/firebase_constants.dart';
+import 'package:searcademy/models/custom_error.dart';
+import 'package:searcademy/repositories/auth_repository_provider.dart';
+import 'package:searcademy/utils/error_dialog.dart';
 
 class VerifyEmailPage extends ConsumerStatefulWidget {
   const VerifyEmailPage({super.key});

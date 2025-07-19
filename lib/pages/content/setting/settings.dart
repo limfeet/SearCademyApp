@@ -7,12 +7,10 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:go_router/go_router.dart';
 import 'package:searcademy/config/router/route_names.dart';
 import 'package:searcademy/constants/firebase_constants.dart';
-import 'package:searcademy/controller/drawer_controller.dart';
 import 'package:searcademy/models/custom_error.dart';
 import 'package:searcademy/pages/content/home/home_provider.dart';
 import 'package:searcademy/pages/providers/theme/theme_provider.dart';
 import 'package:searcademy/pages/widgets/appdrawer.dart';
-import 'package:searcademy/pages/widgets/base_scaffold.dart';
 import 'package:searcademy/repositories/providers/package_info_provider.dart';
 import 'package:searcademy/repositories/providers/scaffoldstate_provider.dart';
 import 'package:searcademy/services/api_client_service.dart';
@@ -40,7 +38,7 @@ Future<Map<String, dynamic>?> getApiVersion() async {
     final healthApiUrl = await getActiveApiHealthUrl();
 
     if (healthApiUrl.isEmpty) {
-      print('Health API URL이 설정되지 않았습니다.');
+      debugPrint('Health API URL이 설정되지 않았습니다.');
       return null;
     }
 
@@ -50,7 +48,7 @@ Future<Map<String, dynamic>?> getApiVersion() async {
       return json.decode(response.body);
     }
   } catch (e) {
-    print('API 버전 조회 실패: $e');
+    debugPrint('API 버전 조회 실패: $e');
   }
   return null;
 }
@@ -63,7 +61,6 @@ class SettingsPage extends ConsumerWidget {
     final uid = fbAuth.currentUser!.uid;
     final profileState = ref.watch(profileProvider(uid));
     final packageInfoAsync = ref.watch(packageInfoProvider);
-    final drawerController = ref.read(drawerControllerProvider.notifier);
     final scaffoldKey = ref.watch(settingsScaffoldKeyProvider);
 
     // 🔥 로그인 제공자 확인 (Google 로그인인지 체크)
@@ -126,12 +123,16 @@ class SettingsPage extends ConsumerWidget {
                   'email: ${appUser.email}',
                   style: const TextStyle(fontSize: 16.0),
                 ),
+
                 const SizedBox(height: 10.0),
-                Text(
-                  'id: ${appUser.id}',
-                  style: const TextStyle(fontSize: 16.0),
-                ),
-                const SizedBox(height: 10.0),
+                // 🔥 디버그 모드에서만 ID 표시
+                if (kDebugMode) ...[
+                  Text(
+                    'id: ${appUser.id}',
+                    style: const TextStyle(fontSize: 16.0),
+                  ),
+                  const SizedBox(height: 10.0),
+                ],
                 Text(
                   'App Version: ${packageInfoAsync.maybeWhen(data: (info) => info.version, orElse: () => '...')}',
                   style: const TextStyle(fontSize: 16.0),

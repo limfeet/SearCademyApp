@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import '../constants/firebase_constants.dart';
-import '../models/app_user.dart';
+import 'package:searcademy/constants/firebase_constants.dart';
+import 'package:searcademy/models/app_user.dart';
+
 import 'handle_exception.dart';
 
 class ProfileRepository {

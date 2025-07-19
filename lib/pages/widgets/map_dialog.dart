@@ -165,9 +165,9 @@ class _LocationSettingDialogState extends State<LocationSettingDialog> {
                     await GeocodingService.geocodeAddress(value);
 
                 if (latLng != null) {
-                  print('주소 좌표: ${latLng.latitude}, ${latLng.longitude}');
+                  debugPrint('주소 좌표: ${latLng.latitude}, ${latLng.longitude}');
                 } else {
-                  print('주소를 찾을 수 없습니다.');
+                  debugPrint('주소를 찾을 수 없습니다.');
                 }
 
                 if (latLng == null) {

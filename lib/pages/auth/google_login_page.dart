@@ -13,10 +13,10 @@ class GoogleSignInButton extends StatelessWidget {
     return ElevatedButton(
       onPressed: () async {
         try {
-          print("Start GoogleSignIn!!!");
+          debugPrint("Start GoogleSignIn!!!");
           if (kDebugMode) {
-            print('Start GoogleSignIn with kDebugMode!!');
-          }    
+            debugPrint('Start GoogleSignIn with kDebugMode!!');
+          }
           // Google 로그인 처리
           final googleSignIn = GoogleSignIn(
             scopes: ['email'],
@@ -41,7 +41,7 @@ class GoogleSignInButton extends StatelessWidget {
             final signedInUser = userCredential.user;
 
             if (signedInUser != null) {
-              print('login success??!!');
+              debugPrint('login success??!!');
 
               // Firestore에 사용자 정보 저장
               final usersCollection =
@@ -51,28 +51,28 @@ class GoogleSignInButton extends StatelessWidget {
                   'name': signedInUser.displayName ?? '', // null 방지
                   'email': signedInUser.email ?? '',
                 }, SetOptions(merge: true)); // 덮어쓰기 방지 + 병합
-                print('Firestore 저장 완료!');
+                debugPrint('Firestore 저장 완료!');
               } on FirebaseException catch (e) {
-                print('Firestore 저장 실패: ${e.code} - ${e.message}');
+                debugPrint('Firestore 저장 실패: ${e.code} - ${e.message}');
               } catch (e) {
-                print('Firestore 저장 실패: $e');
+                debugPrint('Firestore 저장 실패: $e');
               }
             } else {
-              print('Firebase 사용자 없음');
+              debugPrint('Firebase 사용자 없음');
             }
 
             if (kDebugMode) {
-              print('login success??!!');
+              debugPrint('login success??!!');
             }
           } else {
             if (kDebugMode) {
-              print('login failed??!!');
+              debugPrint('login failed??!!');
             }
           }
         } on FirebaseAuthException catch (e) {
-          print('❌ FirebaseAuthException: ${e.code} - ${e.message}');
+          debugPrint('❌ FirebaseAuthException: ${e.code} - ${e.message}');
         } catch (e) {
-          print('❌ Unknown Google login error: $e');
+          debugPrint('❌ Unknown Google login error: $e');
         }
       },
       child: const Text('Google Login'),

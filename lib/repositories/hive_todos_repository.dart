@@ -1,8 +1,8 @@
 import 'dart:math';
 
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:searcademy/models/todo_model.dart';
 
-import '../models/todo_model.dart';
 import 'todos_repository.dart';
 
 const double kProbabiltyOfError = 0.5;

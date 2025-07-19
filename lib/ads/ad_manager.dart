@@ -2,6 +2,7 @@
 // 📄 lib/ads/ad_manager.dart
 // =============================================================================
 
+import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'ad_config.dart';
 
@@ -24,19 +25,19 @@ class AdManager {
     }
 
     await MobileAds.instance.initialize();
-    print('Google Mobile Ads SDK 초기화 완료');
+    debugPrint('Google Mobile Ads SDK 초기화 완료');
   }
 
   // 모든 광고 정리
   void disposeAllAds() {
-    print(
+    debugPrint(
         '광고 정리 시작 - 배너: ${_bannerAds.length}, 전면: ${_interstitialAds.length}');
 
     for (var ad in _bannerAds.values) {
       try {
         ad.dispose();
       } catch (e) {
-        print('배너 광고 정리 중 오류: $e');
+        debugPrint('배너 광고 정리 중 오류: $e');
       }
     }
     _bannerAds.clear();
@@ -45,7 +46,7 @@ class AdManager {
       try {
         ad.dispose();
       } catch (e) {
-        print('전면 광고 정리 중 오류: $e');
+        debugPrint('전면 광고 정리 중 오류: $e');
       }
     }
     _interstitialAds.clear();
@@ -53,7 +54,7 @@ class AdManager {
     // 카운터도 리셋
     _adCounter = 0;
 
-    print('모든 광고 인스턴스 정리 완료');
+    debugPrint('모든 광고 인스턴스 정리 완료');
   }
 
   // 배너 광고 생성
@@ -78,17 +79,17 @@ class AdManager {
       size: AdSize.banner,
       listener: BannerAdListener(
         onAdLoaded: (ad) {
-          print('배너 광고 로드 성공: $adId');
+          debugPrint('배너 광고 로드 성공: $adId');
           onAdLoaded(ad);
         },
         onAdFailedToLoad: (ad, error) {
-          print('배너 광고 로드 실패: $adId, $error');
+          debugPrint('배너 광고 로드 실패: $adId, $error');
           ad.dispose();
           _bannerAds.remove(adId);
           onAdFailedToLoad(ad, error);
         },
-        onAdOpened: (ad) => print('배너 광고 열림'),
-        onAdClosed: (ad) => print('배너 광고 닫힘'),
+        onAdOpened: (ad) => debugPrint('배너 광고 열림'),
+        onAdClosed: (ad) => debugPrint('배너 광고 닫힘'),
       ),
     );
 
@@ -117,12 +118,12 @@ class AdManager {
       request: const AdRequest(),
       adLoadCallback: InterstitialAdLoadCallback(
         onAdLoaded: (ad) {
-          print('전면 광고 로드 성공: $adId');
+          debugPrint('전면 광고 로드 성공: $adId');
           _interstitialAds[adId] = ad;
           onAdLoaded(ad);
         },
         onAdFailedToLoad: (error) {
-          print('전면 광고 로드 실패: $adId, $error');
+          debugPrint('전면 광고 로드 실패: $adId, $error');
           _interstitialAds.remove(adId);
           onAdFailedToLoad(error);
         },

@@ -2,6 +2,7 @@
 // 📄 lib/ads/widgets/interstitial_ad_helper.dart
 // =============================================================================
 
+import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:searcademy/ads/ad_manager.dart';
 
@@ -39,7 +40,7 @@ class InterstitialAdHelper {
 
         ad.fullScreenContentCallback = FullScreenContentCallback(
           onAdDismissedFullScreenContent: (ad) {
-            print('전면 광고 닫힘');
+            debugPrint('전면 광고 닫힘');
             ad.dispose();
             _isAdReady = false;
             _interstitialAd = null;
@@ -54,7 +55,7 @@ class InterstitialAdHelper {
             }
           },
           onAdFailedToShowFullScreenContent: (ad, error) {
-            print('전면 광고 표시 실패: $error');
+            debugPrint('전면 광고 표시 실패: $error');
             ad.dispose();
             _isAdReady = false;
             _interstitialAd = null;
@@ -69,12 +70,12 @@ class InterstitialAdHelper {
             }
           },
           onAdShowedFullScreenContent: (ad) {
-            print('전면 광고 표시됨');
+            debugPrint('전면 광고 표시됨');
           },
         );
       },
       onAdFailedToLoad: (error) {
-        print('전면 광고 로드 실패: ${error.message}');
+        debugPrint('전면 광고 로드 실패: ${error.message}');
         _isAdReady = false;
         _interstitialAd = null;
       },
@@ -85,7 +86,7 @@ class InterstitialAdHelper {
     if (_isAdReady && _interstitialAd != null && !_isDisposed) {
       _interstitialAd!.show();
     } else {
-      print('전면 광고가 준비되지 않음');
+      debugPrint('전면 광고가 준비되지 않음');
     }
   }
 

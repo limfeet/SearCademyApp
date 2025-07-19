@@ -9,7 +9,6 @@ import 'package:searcademy/pages/auth/reset_password/reset_password_page.dart';
 import 'package:searcademy/pages/auth/signin/signin_page.dart';
 import 'package:searcademy/pages/auth/signup/signup_page.dart';
 import 'package:searcademy/pages/auth/verify_email/verify_email_page.dart';
-import 'package:searcademy/pages/content/academy/academylist_detail_page.dart';
 import 'package:searcademy/pages/content/academy/academylist_detail_page_v2.dart';
 import 'package:searcademy/pages/content/academy/academylist_infinite_page_v2.dart';
 import 'package:searcademy/pages/content/setting/change_password_page.dart';
@@ -76,7 +75,7 @@ GoRouter route(Ref ref) {
         path: '/splash',
         name: RouteNames.splash,
         builder: (context, state) {
-          print('##### Splash #####');
+          debugPrint('##### Splash #####');
           return const SplashPage();
         },
       ),
@@ -129,15 +128,6 @@ GoRouter route(Ref ref) {
                   return const InfiniteScrollPageV3();
                 },
                 routes: [
-                  GoRoute(
-                    path: 'academyListDetail/:id',
-                    name: RouteNames.academyListDetail,
-                    builder: (context, state) {
-                      final id = state.pathParameters['id']!;
-                      return AcademylistDetailPage(
-                          academyId: id); // 해당 학원의 상세 페이지로 이동
-                    },
-                  ),
                   GoRoute(
                     path: 'academyDetail/:baseId/:academyId',
                     name: RouteNames.academyDetail,

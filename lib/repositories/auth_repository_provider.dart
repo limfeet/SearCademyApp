@@ -1,8 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:searcademy/constants/firebase_constants.dart';
 
-import '../constants/firebase_constants.dart';
 import 'auth_repository.dart';
 
 part 'auth_repository_provider.g.dart';

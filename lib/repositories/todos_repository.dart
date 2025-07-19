@@ -1,4 +1,4 @@
-import '../models/todo_model.dart';
+import 'package:searcademy/models/todo_model.dart';
 
 abstract class TodosRepository {
   Future<List<Todo>> getTodos();

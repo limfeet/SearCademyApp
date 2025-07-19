@@ -20,7 +20,7 @@ class _BaseScaffoldState extends ConsumerState<BaseScaffold> {
     ref.listen<int>(navIndexProvider, (previous, next) async {
       if (previous != next) {
         //await drawerController.closeDrawer();
-        print('call closeDrawer!!');
+        debugPrint('call closeDrawer!!');
       }
     });
     return widget.child; // ✅ 그냥 child를 리턴

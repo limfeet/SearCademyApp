@@ -1,8 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
-
-import '../models/custom_error.dart';
+import 'package:searcademy/models/custom_error.dart';
 
 void errorDialog(BuildContext context, CustomError e) {
   if (defaultTargetPlatform == TargetPlatform.iOS ||

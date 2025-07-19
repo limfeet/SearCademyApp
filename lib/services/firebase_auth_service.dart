@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 
 /// Firebase JWT 토큰 관리 서비스
 class FirebaseAuthService {
@@ -16,7 +17,7 @@ class FirebaseAuthService {
       }
       return null;
     } catch (e) {
-      print('Firebase 토큰 가져오기 실패: $e');
+      debugPrint('Firebase 토큰 가져오기 실패: $e');
       return null;
     }
   }

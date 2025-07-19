@@ -53,7 +53,7 @@ class _BannerAdWidgetState extends State<BannerAdWidget> {
           }
         },
         onAdFailedToLoad: (ad, error) {
-          print('BannerAd failed to load: $error');
+          debugPrint('BannerAd failed to load: $error');
           if (!_isDisposed && mounted) {
             setState(() {
               _isAdLoaded = false;

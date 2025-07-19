@@ -24,18 +24,18 @@ void main() async {
   // 🔥 광고 SDK 초기화 추가
   try {
     await AdManager.initialize();
-    print("Google Mobile Ads SDK 초기화 완료");
+    debugPrint("Google Mobile Ads SDK 초기화 완료");
   } catch (e) {
-    print("광고 SDK 초기화 실패: $e");
+    debugPrint("광고 SDK 초기화 실패: $e");
   }
 
   try {
     await Hive.initFlutter();
-    print("Hive initialized successfully");
+    debugPrint("Hive initialized successfully");
     await Hive.openBox('todos');
-    print("Box 'todos' opened successfully");
+    debugPrint("Box 'todos' opened successfully");
   } catch (e) {
-    print("Hive initialization or box opening failed: $e");
+    debugPrint("Hive initialization or box opening failed: $e");
   }
 
   final prefs = await SharedPreferences.getInstance();
@@ -84,11 +84,11 @@ class _MyAppState extends ConsumerState<MyApp> with WidgetsBindingObserver {
     switch (state) {
       case AppLifecycleState.resumed:
         // 앱 포그라운드로 돌아올 때
-        print('앱이 포그라운드로 돌아옴');
+        debugPrint('앱이 포그라운드로 돌아옴');
         break;
       case AppLifecycleState.paused:
         // 앱이 백그라운드로 갈 때
-        print('앱이 백그라운드로 이동');
+        debugPrint('앱이 백그라운드로 이동');
         break;
       case AppLifecycleState.detached:
         // 앱 종료 시

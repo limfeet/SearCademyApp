@@ -40,11 +40,11 @@ class ScaffoldWithNavBar extends ConsumerWidget {
 
     // 드로어가 열려있는지 확인하고 닫기
     if (currentTabScaffoldKey?.currentState?.isDrawerOpen ?? false) {
-      print('Drawer 열려있음 - 탭 ${navigationShell.currentIndex}!');
+      debugPrint('Drawer 열려있음 - 탭 ${navigationShell.currentIndex}!');
       currentTabScaffoldKey?.currentState?.closeDrawer();
       await Future.delayed(const Duration(milliseconds: 300));
     } else {
-      print('Drawer 닫혀있음 - 탭 ${navigationShell.currentIndex}!');
+      debugPrint('Drawer 닫혀있음 - 탭 ${navigationShell.currentIndex}!');
     }
 
     navigationShell.goBranch(

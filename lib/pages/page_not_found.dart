@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-
-import '../config/router/route_names.dart';
+import 'package:searcademy/config/router/route_names.dart';
 
 class PageNotFound extends StatelessWidget {
   final String errMsg;

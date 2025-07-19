@@ -1,5 +1,6 @@
 //academy_service.dart
 import 'dart:convert';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
@@ -76,15 +77,15 @@ Future<List<Map<String, dynamic>>> loadAcademyDataV2({
   }
 
   // 디버깅용 로깅 추가
-  print('🔥 API 호출 정보:');
-  print('URL: $uri');
-  print('Headers: $headers');
+  debugPrint('🔥 API 호출 정보:');
+  debugPrint('URL: $uri');
+  debugPrint('Headers: $headers');
 
   final response = await http.get(uri, headers: headers);
 
   // 응답 로깅 추가
-  print('Response status: ${response.statusCode}');
-  print(
+  debugPrint('Response status: ${response.statusCode}');
+  debugPrint(
       'Response body (first 200 chars): ${response.body.length > 200 ? response.body.substring(0, 200) : response.body}');
 
   if (response.statusCode == 200) {
@@ -92,8 +93,8 @@ Future<List<Map<String, dynamic>>> loadAcademyDataV2({
       final List<dynamic> data = json.decode(response.body);
       return data.cast<Map<String, dynamic>>();
     } catch (e) {
-      print('JSON 파싱 에러: $e');
-      print('Full response body: ${response.body}');
+      debugPrint('JSON 파싱 에러: $e');
+      debugPrint('Full response body: ${response.body}');
       throw Exception('JSON 파싱 실패: $e');
     }
   } else {

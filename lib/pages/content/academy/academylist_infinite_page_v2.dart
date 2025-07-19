@@ -66,7 +66,7 @@ class _InfiniteScrollPageV3State extends ConsumerState<InfiniteScrollPageV3> {
   //   _bannerAd = AdManager.instance.createBannerAd(
   //     onAdLoaded: (_) => setState(() {}), // 단순히 setState만 호출
   //     onAdFailedToLoad: (ad, err) {
-  //       print('배너 광고 로드 실패: ${err.message}');
+  //       debugPrint('배너 광고 로드 실패: ${err.message}');
   //       ad.dispose();
   //     },
   //   );
@@ -188,7 +188,7 @@ class _InfiniteScrollPageV3State extends ConsumerState<InfiniteScrollPageV3> {
         }
       });
     } catch (e) {
-      print("에러: $e");
+      debugPrint("에러: $e");
       setState(() => isLoading = false);
       if (mounted) {
         ErrorHandler.handleApiError(context, e);
@@ -301,7 +301,8 @@ class _InfiniteScrollPageV3State extends ConsumerState<InfiniteScrollPageV3> {
                 context: context,
                 builder: (_) => LocationSettingDialog(
                   onLocationSelected: (latLng) {
-                    print("선택된 위치: ${latLng.latitude}, ${latLng.longitude}");
+                    debugPrint(
+                        "선택된 위치: ${latLng.latitude}, ${latLng.longitude}");
                     _changeLocation(latLng.latitude, latLng.longitude);
                   },
                 ),

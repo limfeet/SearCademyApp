@@ -1,6 +1,6 @@
+import 'package:flutter/material.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-
-import '../../../repositories/auth_repository_provider.dart';
+import 'package:searcademy/repositories/auth_repository_provider.dart';
 
 part 'signup_provider.g.dart';
 
@@ -12,7 +12,7 @@ class Signup extends _$Signup {
   FutureOr<void> build() {
     _key = Object();
     ref.onDispose(() {
-      print('[signupProvider] disposed');
+      debugPrint('[signupProvider] disposed');
       _key = null;
     });
   }
