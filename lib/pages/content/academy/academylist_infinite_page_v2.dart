@@ -1,13 +1,11 @@
 // 📄 lib/pages/infinite_scroll_page_v3.dart
 
-import 'dart:io';
 import 'dart:math';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 // 기존 import들
 import 'package:searcademy/pages/widgets/appdrawer.dart';
@@ -20,7 +18,6 @@ import 'package:searcademy/services/api_client_service.dart';
 import 'package:searcademy/utils/error_handler.dart';
 
 // 광고 관련 import들 (ads 폴더에서)
-import 'package:searcademy/ads/ad_manager.dart';
 import 'package:searcademy/ads/utils/ad_list_helper.dart';
 import 'package:searcademy/ads/widgets/banner_ad_widget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -54,27 +51,27 @@ class _InfiniteScrollPageV3State extends ConsumerState<InfiniteScrollPageV3> {
   bool showRecent = false;
 
   // 광고 관련 변수들 (최소화)
-  BannerAd? _bannerAd;
+  //BannerAd? _bannerAd;
 
   @override
   void initState() {
     super.initState();
     initLoad();
     _scrollController.addListener(_onScroll);
-    _loadBannerAd(); // 광고 로드
+    //_loadBannerAd(); // 광고 로드
   }
 
   /// 광고 로드 (간소화됨)
-  void _loadBannerAd() {
-    _bannerAd = AdManager.instance.createBannerAd(
-      onAdLoaded: (_) => setState(() {}), // 단순히 setState만 호출
-      onAdFailedToLoad: (ad, err) {
-        print('배너 광고 로드 실패: ${err.message}');
-        ad.dispose();
-      },
-    );
-    _bannerAd?.load();
-  }
+  // void _loadBannerAd() {
+  //   _bannerAd = AdManager.instance.createBannerAd(
+  //     onAdLoaded: (_) => setState(() {}), // 단순히 setState만 호출
+  //     onAdFailedToLoad: (ad, err) {
+  //       print('배너 광고 로드 실패: ${err.message}');
+  //       ad.dispose();
+  //     },
+  //   );
+  //   _bannerAd?.load();
+  // }
 
   Future<void> initLoad() async {
     setState(() => isInitialLoading = true); // 초기 로딩 시작
@@ -264,7 +261,7 @@ class _InfiniteScrollPageV3State extends ConsumerState<InfiniteScrollPageV3> {
     _scrollController.dispose();
     _searchController.dispose();
     _searchFocusNode.dispose();
-    _bannerAd?.dispose(); // 광고 정리
+    //_bannerAd?.dispose(); // 광고 정리
     super.dispose();
   }
 
@@ -284,7 +281,7 @@ class _InfiniteScrollPageV3State extends ConsumerState<InfiniteScrollPageV3> {
         scaffoldKey: scaffoldKey,
       ),
       appBar: AppBar(
-        title: const Text("학원찾기앱"),
+        title: const Text("학원찾기"),
         leading: IconButton(
           icon: const Icon(Icons.menu),
           onPressed: () {
@@ -385,11 +382,7 @@ class _InfiniteScrollPageV3State extends ConsumerState<InfiniteScrollPageV3> {
                         itemBuilder: (context, index) {
                           // 광고 위치 확인 (ads 폴더의 헬퍼 사용)
                           if (AdListHelper.isAdPosition(index)) {
-                            return BannerAdWidget(
-                              adUnitId: Platform.isAndroid
-                                  ? 'ca-app-pub-3940256099942544/6300978111' // Android 테스트
-                                  : 'ca-app-pub-3940256099942544/2934735716', // iOS 테스트
-                            );
+                            return const BannerAdWidget(); // adUnitId 파라미터 제거
                           }
 
                           // 로딩 인디케이터 확인

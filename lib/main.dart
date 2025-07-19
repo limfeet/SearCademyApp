@@ -11,6 +11,8 @@ import 'package:searcademy/repositories/providers/todos_repository_provider.dart
 import 'package:searcademy/pages/providers/theme/theme_provider.dart';
 import 'package:searcademy/pages/providers/theme/theme_state.dart';
 import 'package:searcademy/repositories/providers/shared_preferences_provider.dart';
+// 🔥 광고 관련 import 추가
+import 'package:searcademy/ads/ad_manager.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -18,6 +20,14 @@ void main() async {
   await FirebaseService.initializeFirebase(); // Firebase 초기화
   // 앱 시작 시 FCM 토큰 얻기
   FirebaseService.getFCMToken();
+
+  // 🔥 광고 SDK 초기화 추가
+  try {
+    await AdManager.initialize();
+    print("Google Mobile Ads SDK 초기화 완료");
+  } catch (e) {
+    print("광고 SDK 초기화 실패: $e");
+  }
 
   try {
     await Hive.initFlutter();
@@ -41,11 +51,56 @@ void main() async {
   );
 }
 
-class MyApp extends ConsumerWidget {
+// 🔥 MyApp을 StatefulWidget으로 변경하여 앱 라이프사이클 관리
+class MyApp extends ConsumerStatefulWidget {
   const MyApp({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends ConsumerState<MyApp> with WidgetsBindingObserver {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+
+    // 앱 시작 시 기존 광고 정리
+    AdManager.instance.disposeAllAds();
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    // 앱 종료 시 광고 정리
+    AdManager.instance.disposeAllAds();
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+
+    switch (state) {
+      case AppLifecycleState.resumed:
+        // 앱 포그라운드로 돌아올 때
+        print('앱이 포그라운드로 돌아옴');
+        break;
+      case AppLifecycleState.paused:
+        // 앱이 백그라운드로 갈 때
+        print('앱이 백그라운드로 이동');
+        break;
+      case AppLifecycleState.detached:
+        // 앱 종료 시
+        AdManager.instance.disposeAllAds();
+        break;
+      default:
+        break;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final router = ref.watch(routeProvider);
     final currentTheme = ref.watch(themeProvider);
 

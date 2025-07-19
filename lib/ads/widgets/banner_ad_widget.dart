@@ -4,6 +4,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:searcademy/ads/ad_manager.dart';
 
 class BannerAdWidget extends StatefulWidget {
   final String adUnitId;
@@ -11,7 +12,7 @@ class BannerAdWidget extends StatefulWidget {
 
   const BannerAdWidget({
     super.key,
-    required this.adUnitId,
+    this.adUnitId = '', // 기본값 제공
     this.adSize = AdSize.banner,
   });
 
@@ -33,11 +34,17 @@ class _BannerAdWidgetState extends State<BannerAdWidget> {
   void _loadAd() {
     if (_isDisposed) return;
 
-    _bannerAd = BannerAd(
-      adUnitId: widget.adUnitId,
-      size: widget.adSize,
-      request: const AdRequest(),
-      listener: BannerAdListener(
+    // 기존 광고 정리
+    _bannerAd?.dispose();
+    _bannerAd = null;
+    _isAdLoaded = false;
+
+    // 잠시 대기 후 새 광고 생성 (중복 방지)
+    Future.delayed(const Duration(milliseconds: 100), () {
+      if (_isDisposed) return;
+
+      // AdManager를 통해 광고 생성
+      _bannerAd = AdManager.instance.createBannerAd(
         onAdLoaded: (ad) {
           if (!_isDisposed && mounted) {
             setState(() {
@@ -47,19 +54,16 @@ class _BannerAdWidgetState extends State<BannerAdWidget> {
         },
         onAdFailedToLoad: (ad, error) {
           print('BannerAd failed to load: $error');
-          ad.dispose();
           if (!_isDisposed && mounted) {
             setState(() {
               _isAdLoaded = false;
             });
           }
         },
-        onAdOpened: (ad) => print('BannerAd opened'),
-        onAdClosed: (ad) => print('BannerAd closed'),
-      ),
-    );
+      );
 
-    _bannerAd?.load();
+      _bannerAd?.load();
+    });
   }
 
   @override

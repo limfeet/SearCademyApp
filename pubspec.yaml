@@ -3,7 +3,7 @@ description: "A Flutter project for Search Academy Platform."
 
 publish_to: 'none'
 
-version: 2.0.0+21
+version: 2.0.1+22
 environment:
   sdk: ^3.6.0
 
