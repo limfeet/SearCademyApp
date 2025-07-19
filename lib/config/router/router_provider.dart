@@ -12,6 +12,7 @@ import 'package:searcademy/pages/auth/verify_email/verify_email_page.dart';
 import 'package:searcademy/pages/content/academy/academylist_detail_page.dart';
 import 'package:searcademy/pages/content/academy/academylist_detail_page_v2.dart';
 import 'package:searcademy/pages/content/academy/academylist_infinite_page_v2.dart';
+import 'package:searcademy/pages/content/setting/change_password_page.dart';
 import 'package:searcademy/pages/content/setting/developer_page.dart';
 import 'package:searcademy/pages/content/setting/settings.dart';
 import 'package:searcademy/pages/splash/firebase_error_page.dart';
@@ -158,6 +159,11 @@ GoRouter route(Ref ref) {
                 name: RouteNames.settings,
                 builder: (context, state) => const SettingsPage(),
                 routes: [
+                  GoRoute(
+                    path: 'changePassword', // '/settings/changePassword'가 됨
+                    name: RouteNames.changePassword,
+                    builder: (context, state) => const ChangePasswordPage(),
+                  ),
                   GoRoute(
                     path: 'developer',
                     name: RouteNames.developerPage,

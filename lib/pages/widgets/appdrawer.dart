@@ -36,6 +36,12 @@ class AppDrawer extends ConsumerWidget {
     final profileState = ref.watch(profileProvider(uid));
     final packageInfoAsync = ref.watch(packageInfoProvider);
 
+    // 🔥 로그인 제공자 확인 (Google 로그인인지 체크)
+    final user = fbAuth.currentUser;
+    final isPasswordProvider =
+        user?.providerData.any((info) => info.providerId == 'password') ??
+            false;
+
     return Drawer(
         child: ListView(
       padding: EdgeInsets.zero,
@@ -98,18 +104,22 @@ class AppDrawer extends ConsumerWidget {
             );
           },
         ),
-        ListTile(
-          leading: Icon(Icons.person),
-          title: Text('Change password'),
-          //selected: currentPath == '/changePassword',
-          selected: currentPath == '/${RouteNames.changePassword}',
-          onTap: () {
-            _navigateAndCloseDrawer(
-              context,
-              () => GoRouter.of(context).goNamed(RouteNames.changePassword),
-            );
-          },
-        ),
+
+        // 🔥 패스워드 제공자인 경우에만 Change Password 표시
+        if (isPasswordProvider) ...[
+          ListTile(
+            leading: Icon(Icons.person),
+            title: Text('Change password'),
+            selected: currentPath == '/settings/changePassword',
+            onTap: () {
+              _navigateAndCloseDrawer(
+                context,
+                () => GoRouter.of(context).goNamed(RouteNames.changePassword),
+              );
+            },
+          ),
+        ],
+
         // ListTile(
         //   leading: Icon(Icons.settings),
         //   title: Text('설정'),

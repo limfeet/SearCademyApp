@@ -66,6 +66,12 @@ class SettingsPage extends ConsumerWidget {
     final drawerController = ref.read(drawerControllerProvider.notifier);
     final scaffoldKey = ref.watch(settingsScaffoldKeyProvider);
 
+    // 🔥 로그인 제공자 확인 (Google 로그인인지 체크)
+    final user = fbAuth.currentUser;
+    final isPasswordProvider =
+        user?.providerData.any((info) => info.providerId == 'password') ??
+            false;
+
     if (kDebugMode) {
       // ✅ JWT 출력
       Future.microtask(() async {
@@ -186,16 +192,24 @@ class SettingsPage extends ConsumerWidget {
 
                   const SizedBox(height: 20), // 기존 버튼과 간격 조정
                 ],
-                OutlinedButton(
-                  onPressed: () {
-                    GoRouter.of(context).goNamed(RouteNames.changePassword);
-                  },
-                  child: const Text(
-                    'Change Password',
-                    style: TextStyle(fontSize: 20),
+
+                // 🔥 패스워드 제공자인 경우에만 Change Password 버튼 표시
+                if (isPasswordProvider) ...[
+                  OutlinedButton(
+                    onPressed: () {
+                      GoRouter.of(context).goNamed(RouteNames.changePassword);
+                    },
+                    child: const Text(
+                      'Change Password',
+                      style: TextStyle(fontSize: 20),
+                    ),
                   ),
-                ),
-                const SizedBox(height: 40),
+                  const SizedBox(height: 40),
+                ] else ...[
+                  // Google 로그인 사용자에게는 다른 메시지나 버튼을 표시할 수 있음
+                  const SizedBox(height: 40),
+                ],
+
                 IconButton(
                   onPressed: () {
                     ref.read(themeProvider.notifier).toggleTheme();
