@@ -16,7 +16,7 @@ class AdConfig {
 
   // 실제 광고 ID들 (배포시 사용)
   static const String _prodBannerAndroid =
-      'ca-app-pub-YOUR_REAL_ID/banner_android';
+      'ca-app-pub-7168028268442960/1975777639';
   static const String _prodBannerIOS = 'ca-app-pub-YOUR_REAL_ID/banner_ios';
   static const String _prodInterstitialAndroid =
       'ca-app-pub-YOUR_REAL_ID/interstitial_android';
@@ -24,7 +24,7 @@ class AdConfig {
       'ca-app-pub-YOUR_REAL_ID/interstitial_ios';
 
   // 테스트 모드 플래그
-  static const bool isTestMode = true; // 배포시 false로 변경
+  static const bool isTestMode = false; // 배포시 false로 변경
 
   // 배너 광고 ID
   static String get bannerAdUnitId {
